@@ -1,0 +1,245 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>MatchPoint Badminton Tournament</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;600;700;800;900&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <div class="bg-decor">
+    <div class="shuttle shuttle-1"></div>
+    <div class="shuttle shuttle-2"></div>
+    <div class="shuttle shuttle-3"></div>
+    <div class="court-lines"></div>
+  </div>
+
+  <header>
+    <div class="logo-area">
+      <span class="logo-icon">&#127992;</span>
+      <h1>MatchPoint</h1>
+    </div>
+    <p class="subtitle">Badminton Tournament &mdash; Smash it, Score it, Win it!</p>
+  </header>
+
+  <main>
+    <!-- Step 1: Setup -->
+    <section id="step-setup" class="card step">
+      <h2><span class="step-num">01</span> Tournament Setup</h2>
+      <div class="form-group">
+        <label for="numPlayers">Number of Players</label>
+        <input type="number" id="numPlayers" min="4" max="24" step="2" value="12" />
+        <span class="hint">Even number, 4&ndash;24 (e.g. 12, 18, 24)</span>
+      </div>
+      <div class="form-group">
+        <label for="numCourts">Number of Courts</label>
+        <input type="number" id="numCourts" min="1" max="4" value="2" />
+        <span class="hint">1&ndash;4 courts</span>
+      </div>
+      <div class="form-group">
+        <label>Game Mode</label>
+        <div class="radio-group" id="gameModeGroup">
+          <label class="radio-label">
+            <input type="radio" name="gameMode" value="specify" checked />
+            Specify games per team
+          </label>
+          <label class="radio-label">
+            <input type="radio" name="gameMode" value="roundrobin" />
+            Full Round-Robin (every team plays every other)
+          </label>
+        </div>
+      </div>
+      <div class="form-group" id="gptGroup">
+        <label for="numGamesPerTeam">Games Per Team</label>
+        <input type="number" id="numGamesPerTeam" min="1" max="20" value="3" />
+        <span class="hint" id="gptHint">1 to N&minus;1 games, no duplicate matchups</span>
+      </div>
+      <div id="setup-error" class="error" hidden></div>
+      <button id="btnNext" class="btn primary">Let's Go &rarr;</button>
+    </section>
+
+    <!-- Step 2: Player Names + Team Mode -->
+    <section id="step-names" class="card step" hidden>
+      <h2><span class="step-num">02</span> Squad Roll Call</h2>
+      <div id="nameFields" class="name-grid"></div>
+
+      <div class="form-group">
+        <label>Team Formation</label>
+        <div class="radio-group" id="teamModeGroup">
+          <label class="radio-label">
+            <input type="radio" name="teamMode" value="random" checked />
+            All Random (card pick)
+          </label>
+          <label class="radio-label">
+            <input type="radio" name="teamMode" value="fixed" />
+            All Fixed (you choose every team)
+          </label>
+          <label class="radio-label">
+            <input type="radio" name="teamMode" value="mixed" />
+            Mixed (some fixed, rest random)
+          </label>
+        </div>
+      </div>
+
+      <div id="fixedTeamsArea" hidden>
+        <h3>&#128279; Tap two players to pair them</h3>
+        <div id="fixedPairsDone" class="fixed-pairs-done"></div>
+        <div id="fixedChipsPool" class="fixed-chips-pool"></div>
+        <span class="hint" id="fixedTeamsHint" style="margin-top:0.5rem"></span>
+      </div>
+
+      <div id="names-error" class="error" hidden></div>
+      <div class="btn-row">
+        <button id="btnBack" class="btn secondary">&larr; Back</button>
+        <button id="btnGenerate" class="btn primary">Continue &rarr;</button>
+      </div>
+    </section>
+
+    <!-- Step 2.5: Card Pick Ceremony -->
+    <section id="step-cardpick" class="card step" hidden>
+      <h2>&#127183; Card Pick Ceremony</h2>
+      <div id="pickBanner" class="pick-banner"></div>
+      <div id="pickGrid" class="pick-grid"></div>
+      <div id="pickLog" class="pick-log"></div>
+      <div id="pickDone" hidden>
+        <div class="games-info" style="text-align:center">All cards picked! Teams are set.</div>
+        <div class="btn-row" style="justify-content:center">
+          <button id="btnStartLeague" class="btn accent">Start Tournament &rarr;</button>
+        </div>
+      </div>
+      <div class="btn-row">
+        <button id="btnBackToNames" class="btn secondary">&larr; Back to Names</button>
+      </div>
+    </section>
+
+    <!-- Step 3: League Phase -->
+    <section id="step-league" class="card step" hidden>
+      <h2>&#127941; League Phase</h2>
+      <div id="gamesInfo" class="games-info"></div>
+
+      <div class="results-section">
+        <h3>&#129309; Teams</h3>
+        <div id="teamsList" class="teams-grid"></div>
+      </div>
+
+      <div class="results-section">
+        <h3>&#128197; Match Schedule</h3>
+        <p class="hint" style="margin-bottom:0.5rem">Click the winning team, then enter scores</p>
+        <div class="table-wrap">
+          <table id="scheduleTable">
+            <thead id="scheduleHead"></thead>
+            <tbody id="scheduleBody"></tbody>
+          </table>
+        </div>
+      </div>
+
+      <div class="results-section">
+        <h3>&#128200; Leaderboard</h3>
+        <div class="table-wrap">
+          <table id="leaderboardTable">
+            <thead>
+              <tr>
+                <th>#</th>
+                <th>Team</th>
+                <th>P</th>
+                <th>W</th>
+                <th>L</th>
+                <th>Pts</th>
+                <th>+/&minus;</th>
+              </tr>
+            </thead>
+            <tbody id="leaderboardBody"></tbody>
+          </table>
+        </div>
+      </div>
+
+      <div id="league-progress" class="games-info"></div>
+
+      <div class="btn-row">
+        <button id="btnLeagueRestart" class="btn secondary">&larr; Start Over</button>
+        <button id="btnLeagueReRandomize" class="btn primary">Re-Shuffle!</button>
+        <button id="btnToSemis" class="btn accent" disabled>Semi-Finals &rarr;</button>
+      </div>
+    </section>
+
+    <!-- Step 4: Semi-Finals -->
+    <section id="step-semis" class="card step" hidden>
+      <h2>&#9876;&#65039; Semi-Finals</h2>
+      <div id="semisInfo" class="games-info"></div>
+      <div id="semisMatches" class="knockout-matches"></div>
+      <div class="btn-row">
+        <button id="btnBackToLeague" class="btn secondary">&larr; Back to League</button>
+        <button id="btnToFinals" class="btn accent" disabled>Finals &rarr;</button>
+      </div>
+    </section>
+
+    <!-- Step 5: Finals -->
+    <section id="step-finals" class="card step" hidden>
+      <h2>&#128293; THE FINAL</h2>
+      <div id="finalsMatch" class="knockout-matches"></div>
+      <div class="btn-row">
+        <button id="btnBackToSemis" class="btn secondary">&larr; Back to Semis</button>
+        <button id="btnToSummary" class="btn accent" disabled>Results &amp; Costs &rarr;</button>
+      </div>
+    </section>
+
+    <!-- Step 6: Final Summary & Cost -->
+    <section id="step-summary" class="card step" hidden>
+      <h2>&#127942; Results &amp; Cost Split</h2>
+
+      <div class="results-section">
+        <h3>Final Standings</h3>
+        <div id="finalStandings" class="standings-list"></div>
+      </div>
+
+      <div class="results-section">
+        <h3>&#128176; Cost Calculator</h3>
+        <div class="cost-inputs">
+          <div class="form-group">
+            <label for="courtCost">Court Cost</label>
+            <input type="number" id="courtCost" min="0" step="any" value="1400" />
+          </div>
+          <div class="form-group">
+            <label for="shuttleCost">Shuttles Cost</label>
+            <input type="number" id="shuttleCost" min="0" step="any" value="400" />
+          </div>
+          <button id="btnCalcCost" class="btn primary">Calculate</button>
+        </div>
+      </div>
+
+      <div class="results-section" id="costResultsSection" hidden>
+        <h3>Payment Breakdown</h3>
+        <div id="costSummaryInfo" class="games-info"></div>
+        <div class="table-wrap">
+          <table id="costTable">
+            <thead>
+              <tr>
+                <th>Player</th>
+                <th>Team</th>
+                <th>Standing</th>
+                <th>Amount</th>
+              </tr>
+            </thead>
+            <tbody id="costBody"></tbody>
+          </table>
+        </div>
+        <div id="costTotal" class="cost-total"></div>
+      </div>
+
+      <div class="btn-row">
+        <button id="btnSummaryRestart" class="btn secondary">&larr; New Tournament</button>
+        <button id="btnPrint" class="btn accent">Print Results</button>
+      </div>
+    </section>
+  </main>
+
+  <footer>
+    <p>MatchPoint Badminton Tournament &copy; 2026 | Created by VJ &#128526;</p>
+  </footer>
+
+  <script src="app.js"></script>
+</body>
+</html>

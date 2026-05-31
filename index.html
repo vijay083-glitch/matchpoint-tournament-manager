@@ -31,8 +31,8 @@
       <h2><span class="step-num">01</span> Tournament Setup</h2>
       <div class="form-group">
         <label for="numPlayers">Number of Players</label>
-        <input type="number" id="numPlayers" min="4" max="24" step="2" value="12" />
-        <span class="hint">Even number, 4&ndash;24 (e.g. 12, 18, 24)</span>
+        <input type="number" id="numPlayers" min="4" max="30" step="1" value="12" />
+        <span class="hint">4&ndash;30 players (even for Fixed, any for Flexible)</span>
       </div>
       <div class="form-group">
         <label for="numCourts">Number of Courts</label>
@@ -40,20 +40,33 @@
         <span class="hint">1&ndash;4 courts</span>
       </div>
       <div class="form-group">
+        <label>Tournament Format</label>
+        <div class="radio-group" id="tournamentFormatGroup">
+          <label class="radio-label">
+            <input type="radio" name="tournamentFormat" value="fixed" checked />
+            Fixed Teams (same partner all tournament)
+          </label>
+          <label class="radio-label">
+            <input type="radio" name="tournamentFormat" value="flexible" />
+            Flexible Teams (new partner every round)
+          </label>
+        </div>
+      </div>
+      <div class="form-group">
         <label>Game Mode</label>
         <div class="radio-group" id="gameModeGroup">
           <label class="radio-label">
             <input type="radio" name="gameMode" value="specify" checked />
-            Specify games per team
+            <span id="gameModeSpecifyLabel">Specify games per team</span>
           </label>
           <label class="radio-label">
             <input type="radio" name="gameMode" value="roundrobin" />
-            Full Round-Robin (every team plays every other)
+            <span id="gameModeRRLabel">Full Round-Robin</span>
           </label>
         </div>
       </div>
       <div class="form-group" id="gptGroup">
-        <label for="numGamesPerTeam">Games Per Team</label>
+        <label for="numGamesPerTeam" id="gptLabel">Games Per Team</label>
         <input type="number" id="numGamesPerTeam" min="1" max="20" value="3" />
         <span class="hint" id="gptHint">1 to N&minus;1 games, no duplicate matchups</span>
       </div>
@@ -66,7 +79,7 @@
       <h2><span class="step-num">02</span> Squad Roll Call</h2>
       <div id="nameFields" class="name-grid"></div>
 
-      <div class="form-group">
+      <div class="form-group" id="teamModeSection">
         <label>Team Formation</label>
         <div class="radio-group" id="teamModeGroup">
           <label class="radio-label">
@@ -121,7 +134,7 @@
       <div id="gamesInfo" class="games-info"></div>
 
       <div class="results-section">
-        <h3>&#129309; Teams</h3>
+        <h3 id="teamsHeader">&#129309; Teams</h3>
         <div id="teamsList" class="teams-grid"></div>
       </div>
 
@@ -140,7 +153,7 @@
         <h3>&#128200; Leaderboard</h3>
         <div class="table-wrap">
           <table id="leaderboardTable">
-            <thead>
+            <thead id="leaderboardHead">
               <tr>
                 <th>#</th>
                 <th>Team</th>

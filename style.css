@@ -415,6 +415,71 @@ main {
   font-size: 0.9rem;
   font-weight: 600;
   border-left: 4px solid;
+  cursor: pointer;
+  transition: opacity 0.2s, box-shadow 0.2s, transform 0.15s, filter 0.2s;
+  user-select: none;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.4rem;
+}
+
+.badge-label {
+  flex: 1;
+  min-width: 0;
+}
+
+.badge-toggle {
+  background: none;
+  border: none;
+  font-size: 0.65rem;
+  cursor: pointer;
+  opacity: 0.3;
+  padding: 0.15rem 0.25rem;
+  line-height: 1;
+  transition: opacity 0.15s, color 0.15s;
+  color: inherit;
+  font-family: inherit;
+  border-radius: 4px;
+  flex-shrink: 0;
+}
+
+.badge-toggle:hover {
+  opacity: 1;
+  background: rgba(255, 255, 255, 0.08);
+}
+
+.team-badge:hover {
+  filter: brightness(1.15);
+  transform: scale(1.02);
+}
+
+.team-badge.badge-active {
+  box-shadow: 0 0 0 2px var(--neon-yellow), 0 0 12px rgba(245, 255, 0, 0.25);
+  transform: scale(1.03);
+}
+
+.team-badge.badge-dimmed {
+  opacity: 0.3;
+  filter: grayscale(0.5);
+}
+
+.team-badge.badge-unavailable {
+  opacity: 0.25;
+  filter: grayscale(0.8);
+}
+
+.team-badge.badge-unavailable .badge-label {
+  text-decoration: line-through;
+}
+
+.team-badge.badge-unavailable .badge-toggle {
+  opacity: 0.8;
+  color: var(--neon-green);
+}
+
+.team-badge.badge-unavailable:hover {
+  opacity: 0.4;
 }
 
 /* ── Team colours (24 neon hues — one shade per colour) ──── */
@@ -681,6 +746,17 @@ tbody tr:hover {
   background: rgba(57, 255, 20, 0.04);
 }
 
+/* ── Schedule filter (click badge to highlight) ──────────── */
+#scheduleBody tr.filter-resting {
+  opacity: 0.2;
+}
+
+.match-cell.match-highlighted {
+  background: rgba(245, 255, 0, 0.08);
+  border-radius: 8px;
+  box-shadow: 0 0 0 2px var(--neon-yellow), 0 0 10px rgba(245, 255, 0, 0.15);
+}
+
 td.round-label {
   font-weight: 700;
   text-align: left;
@@ -732,6 +808,58 @@ td.round-label {
   font-size: 0.7rem;
   color: var(--text-muted);
   font-weight: 700;
+}
+
+/* ── Unavailable match overlay ───────────────────────────── */
+.match-cell.match-unavailable {
+  opacity: 0.18;
+  pointer-events: none;
+  position: relative;
+}
+
+.match-cell.match-unavailable::after {
+  content: "AWAY";
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  font-size: 0.6rem;
+  font-weight: 800;
+  letter-spacing: 0.12em;
+  color: var(--neon-pink);
+  opacity: 3;
+  text-transform: uppercase;
+  pointer-events: none;
+}
+
+/* ── Flexible match buttons ──────────────────────────────── */
+.match-cell .flex-match-btn {
+  padding: 4px 8px;
+  border-radius: 6px;
+  font-size: 0.78rem;
+  font-weight: 700;
+  font-family: inherit;
+  cursor: pointer;
+  border: 2px solid var(--border);
+  background: var(--bg-card-alt);
+  color: var(--text);
+  transition: all 0.2s;
+  line-height: 1.3;
+}
+
+.match-cell .flex-match-btn:hover {
+  border-color: var(--neon-cyan);
+  transform: scale(1.04);
+}
+
+.match-cell .flex-match-btn.winner {
+  border-color: var(--neon-green);
+  background: rgba(57, 255, 20, 0.12);
+  color: var(--neon-green);
+}
+
+.match-cell .flex-match-btn.loser {
+  opacity: 0.3;
 }
 
 /* ── Score inputs row ────────────────────────────────────── */
@@ -1126,6 +1254,12 @@ footer {
     font-size: 0.6rem;
   }
 
+  .match-cell .flex-match-btn {
+    padding: 2px 5px;
+    font-size: 0.65rem;
+    border-width: 1.5px;
+  }
+
   .score-row {
     gap: 0.15rem;
     margin-top: 0.1rem;
@@ -1325,6 +1459,11 @@ footer {
   .match-cell .team-btn {
     padding: 2px 4px;
     font-size: 0.68rem;
+  }
+
+  .match-cell .flex-match-btn {
+    padding: 2px 4px;
+    font-size: 0.62rem;
   }
 
   .score-input {
